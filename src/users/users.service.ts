@@ -12,15 +12,36 @@ export class UsersService {
     }
 
     async getUsers() {
-        // const { data: users, error } = await this.supabase.from('users').select('*');
+        const { data: users, error } = await this.supabase.from('users').select('*')
 
-        console.log(this.supabase);
+        if (error) {
+            console.error(error);
+        } else {
+            return users;
+        }
+    }
 
-        // if (error) {
-        //     console.log(this.supabase);
-        //     // console.error(error);
-        // } else {
-        //     return users;
-        // }
+    async getUser(id: number) {
+        const { data: user, error } = await this.supabase.from('users').select('*').eq('id', id).single();
+        
+        if (error) {
+            console.error(error);
+        } else {
+            return user;
+        }
+    }
+
+    async createUser(email: string, name: string, password: string) {
+        const { data: user, error } = await this.supabase.from('users').insert({
+            email: email,
+            name: name,
+            password: password
+        })
+
+        if (error) {
+            console.error(error);
+        } else {
+            return user;
+        }
     }
 }
