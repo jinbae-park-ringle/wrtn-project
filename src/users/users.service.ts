@@ -1,22 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcrypt';
+import { DuplicateEmailError, NoResultError } from './users.module';
+
+function getSupabaseClient() {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_KEY;
+    return createClient(supabaseUrl, supabaseKey);
+}
 
 @Injectable()
 export class UsersService {
     private supabase;
 
     constructor() {
-        const supabaseUrl = process.env.SUPABASE_URL;
-        const supabaseKey = process.env.SUPABASE_KEY;
-        this.supabase = createClient(supabaseUrl, supabaseKey);
+        this.supabase = getSupabaseClient();
     }
 
     async getUsers() {
         const { data: users, error } = await this.supabase.from('users').select('*');
 
         if (error) {
-            return error;
+            if (error.code === "PGRST116") {
+                throw new NoResultError();
+            } else {
+                return error;
+            }
         } else {
             return users;
         }
@@ -26,7 +35,11 @@ export class UsersService {
         const { data: user, error } = await this.supabase.from('users').select('*').eq('id', id).single();
 
         if (error) {
-            return error;
+            if (error.code === "PGRST116") {
+                throw new NoResultError();
+            } else {
+                return error;
+            }
         } else {
             return user;
         }
@@ -41,10 +54,17 @@ export class UsersService {
     async createUser(email: string, name: string, password: string) {
         const hashedPassword = await this.hashPassword(password);
         const { error } = await this.supabase.from('users').insert([{ email, name, password: hashedPassword }]);
+
+        if (error) {
+            if (error.code === '23505') {
+                throw new DuplicateEmailError();
+            }
+        }
+
         const { data: user, error: selectError } = await this.supabase.from('users').select('*').eq('email', email).single();
 
-        if (error || selectError) {
-            return error || selectError;
+        if (selectError) {
+            return selectError;
         } else {
             return user;
         }
