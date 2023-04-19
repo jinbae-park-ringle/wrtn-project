@@ -16,40 +16,57 @@ export class UsersService {
         const { data: users, error } = await this.supabase.from('users').select('*')
 
         if (error) {
-            console.error(error);
+            return error;
         } else {
             return users;
         }
     }
 
     async getUser(id: number) {
-        const { data: user, error } = await this.supabase.from('users').select('*').eq('id', id).single();
+        const { data: user, error } = await this.supabase.from('users').select('*').eq('id', id).single()
 
         if (error) {
-            console.error(error);
+            return error;
         } else {
             return user;
         }
     }
 
     async hashPassword(password: string) {
-        const saltOrRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltOrRounds);
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(password, salt);
         return hashedPassword;
     }
 
     async createUser(email: string, name: string, password: string) {
         const hashedPassword = await this.hashPassword(password);
-        const { data: user, error } = await this.supabase.from('users').insert({
-            email: email,
-            name: name,
-            password: hashedPassword
-        })
+        const { data: user, error } = await this.supabase.from('users').insert({ email, name, password: hashedPassword })
 
         if (error) {
             return error;
         } else {
-            return user;
+            return "성공적으로 생성되었습니다."
+        }
+    }
+
+    async updateUser(id: number, email: string, name: string, password: string) {
+        const hashedPassword = await this.hashPassword(password);
+        const { data: user, error } = await this.supabase.from('users').update({ email, name, password: hashedPassword }).eq('id', id)
+
+        if (error) {
+            return error;
+        } else {
+            return "성공적으로 수정되었습니다."
+        }
+    }
+
+    async deleteUser(id: number) {
+        const { data: user, error } = await this.supabase.from('users').delete().eq('id', id)
+
+        if (error) {
+            return error;
+        } else {
+            return "성공적으로 삭제되었습니다."
         }
     }
 }

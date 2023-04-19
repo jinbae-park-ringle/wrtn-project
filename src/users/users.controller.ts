@@ -21,14 +21,14 @@ export class UsersController {
         return this.usersService.createUser(email, name, password);
     }
 
-    // @Put(':id')
-    // async updateUser(@Param('id') id: number, @Body() body: any) {
-    //     const { email, name, password } = body;
-    //     return this.usersService.updateUser(id, email, name, password);
-    // }
+    @Put(':id')
+    async updateUser(@Param('id') id: number, @Body() body: any) {
+        const { email, name, password } = body;
+        return this.usersService.updateUser(id, email, name, password);
+    }
 
-    // @Delete(':id')
-    // async deleteUser(@Param('id') id: number) {
-    //     return this.usersService.deleteUser(id);
-    // }
+    @Delete(':id')
+    async deleteUser(@Param('id') id: number) {
+        return this.usersService.deleteUser(id);
+    }
 }
