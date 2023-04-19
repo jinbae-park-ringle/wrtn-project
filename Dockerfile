@@ -5,4 +5,4 @@ COPY . .
 
 RUN npm install
 
-CMD ["npm", "start", "--watch"]
+CMD ["npm", "start"]
