@@ -3,6 +3,12 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
+export interface UpdateUserRequest {
+  email?: string;
+  name?: string;
+  password?: string;
+}
+
 export class DuplicateEmailError extends HttpException {
   constructor() {
     super('Duplicate email error', HttpStatus.CONFLICT);

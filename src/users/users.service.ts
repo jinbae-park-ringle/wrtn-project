@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcrypt';
-import { DuplicateEmailError, NoResultError } from './users.module';
+import { DuplicateEmailError, NoResultError, UpdateUserRequest } from './users.module';
 
 function getSupabaseClient() {
     const supabaseUrl = process.env.SUPABASE_URL;
@@ -70,13 +70,20 @@ export class UsersService {
         }
     }
 
-    async updateUser(id: number, email: string, name: string, password: string) {
-        const hashedPassword = await this.hashPassword(password);
+    async updateUser(id: number, fieldsToUpdate: Partial<UpdateUserRequest>) {
+        const { email, name, password } = fieldsToUpdate
+        const hashedPassword = password ? await this.hashPassword(password) : undefined;
         const { error } = await this.supabase.from('users').update({ email, name, password: hashedPassword }).eq('id', id);
-        const { data: user, error: selectError } = await this.supabase.from('users').select('*').eq('email', email).single();
+        const { data: user, error: selectError } = await this.supabase.from('users').select('*').eq('id', id).single();
+        
+        if (error) {
+            if (error.code === '23505') {
+                throw new DuplicateEmailError();
+            }
+        }
 
-        if (error || selectError) {
-            return error || selectError;
+        if (selectError) {
+            return selectError;
         } else {
             return user;
         }
