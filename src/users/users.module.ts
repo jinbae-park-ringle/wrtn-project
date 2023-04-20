@@ -21,6 +21,12 @@ export class NoResultError extends HttpException {
   }
 }
 
+export class InvalidEmailError extends HttpException {
+  constructor() {
+    super('Invalid email error', HttpStatus.UNPROCESSABLE_ENTITY)
+  }
+}
+
 @Module({
   providers: [UsersService],
   controllers: [UsersController]

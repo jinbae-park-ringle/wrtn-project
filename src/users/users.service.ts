@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcrypt';
-import { DuplicateEmailError, NoResultError, UpdateUserRequest } from './users.module';
+import { DuplicateEmailError, NoResultError, InvalidEmailError, UpdateUserRequest } from './users.module';
 
 function getSupabaseClient() {
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_KEY;
+    const supabaseUrl = "https://xxibjawyzuvhzzmblcim.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4aWJqYXd5enV2aHp6bWJsY2ltIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODE4MTU5MzcsImV4cCI6MTk5NzM5MTkzN30.0XElYC64U_k0VCK4mIVIDSACw54cY35yxeZ9JVqfcvM";
     return createClient(supabaseUrl, supabaseKey);
 }
 
@@ -58,7 +58,10 @@ export class UsersService {
         if (error) {
             if (error.code === '23505') {
                 throw new DuplicateEmailError();
-            } else {
+            } else if (error.code === '23514') {
+                throw new InvalidEmailError();
+            }
+            else {
                 return error;
             }
         } else {
@@ -76,6 +79,8 @@ export class UsersService {
                 throw new DuplicateEmailError();
             } else if (error.code === 'PGRST116') {
                 throw new NoResultError();
+            } else if (error.code === '23514') {
+                throw new InvalidEmailError();
             }
             else {
                 return error;
