@@ -64,7 +64,9 @@ describe('UsersService', () => {
       const newUser = { id: 4, name: 'Jane', email: 'jane@example.com' }
       const mockSupabase = {
         from: jest.fn().mockReturnThis(),
-        insert: jest.fn().mockResolvedValue({ data: newUser }),
+        insert: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        single: jest.fn().mockResolvedValue({ data: newUser }),
       }
 
       jest.mock('@supabase/supabase-js', () => ({
@@ -84,7 +86,9 @@ describe('UsersService', () => {
       const mockSupabase = {
         from: jest.fn().mockReturnThis(),
         update: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockResolvedValue({ data: updatedUserInFuture }),
+        eq: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        single: jest.fn().mockResolvedValue({ data: updatedUserInFuture }),
       }
 
       jest.mock('@supabase/supabase-js', () => ({
@@ -105,7 +109,9 @@ describe('UsersService', () => {
       const mockSupabase = {
         from: jest.fn().mockReturnThis(),
         delete: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockResolvedValue({ data: mockUsers[specific_id - 1] }),
+        eq: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        single: jest.fn().mockResolvedValue({ data: mockUsers[specific_id - 1] }),
       }
 
       jest.mock('@supabase/supabase-js', () => ({

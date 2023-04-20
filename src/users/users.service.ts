@@ -53,7 +53,7 @@ export class UsersService {
 
     async createUser(email: string, name: string, password: string) {
         const hashedPassword = await this.hashPassword(password);
-        const { data: user, error } = await this.supabase.from('users').insert([{ email, name, password: hashedPassword }]);
+        const { data: user, error } = await this.supabase.from('users').insert([{ email, name, password: hashedPassword }]).select().single();
 
         if (error) {
             if (error.code === '23505') {
@@ -69,12 +69,15 @@ export class UsersService {
     async updateUser(id: number, fieldsToUpdate: Partial<UpdateUserRequest>) {
         const { email, name, password } = fieldsToUpdate
         const hashedPassword = password ? await this.hashPassword(password) : undefined;
-        const { data: user, error } = await this.supabase.from('users').update({ email, name, password: hashedPassword }).eq('id', id);
+        const { data: user, error } = await this.supabase.from('users').update({ email, name, password: hashedPassword }).eq('id', id).select().single();
         
         if (error) {
             if (error.code === '23505') {
                 throw new DuplicateEmailError();
-            } else {
+            } else if (error.code === 'PGRST116') {
+                throw new NoResultError();
+            }
+            else {
                 return error;
             }
         } else {
@@ -83,10 +86,14 @@ export class UsersService {
     }
 
     async deleteUser(id: number) {
-        const { data: user, error } = await this.supabase.from('users').delete().eq('id', id);
+        const { data: user, error } = await this.supabase.from('users').delete().eq('id', id).select().single();
 
         if (error) {
-            return error;
+            if (error.code === 'PGRST116') {
+                throw new NoResultError();
+            } else {
+                return error;
+            }
         } else {
             return user;
         }
