@@ -29,6 +29,6 @@ localhost:3000/api
 1. 총 5가지의 API를 만들었습니다.
   - Get API 2개, POST, PUT, DELETE 각 1개씩
  
-2. 과제를 진행하며 더 자세한 기록은 아래 노션 링크를 참조하시면 됩니다.
+2. 과제를 진행하며 아래 노션 링크에 더 구체적으로 기록해두었습니다.
 
   https://cosmic-stream-f25.notion.site/c0ee370dea07443c96251735c88b6792
