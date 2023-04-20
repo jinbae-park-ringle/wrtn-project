@@ -53,18 +53,14 @@ export class UsersService {
 
     async createUser(email: string, name: string, password: string) {
         const hashedPassword = await this.hashPassword(password);
-        const { error } = await this.supabase.from('users').insert([{ email, name, password: hashedPassword }]);
+        const { data: user, error } = await this.supabase.from('users').insert([{ email, name, password: hashedPassword }]);
 
         if (error) {
             if (error.code === '23505') {
                 throw new DuplicateEmailError();
+            } else {
+                return error;
             }
-        }
-
-        const { data: user, error: selectError } = await this.supabase.from('users').select('*').eq('email', email).single();
-
-        if (selectError) {
-            return selectError;
         } else {
             return user;
         }
@@ -73,29 +69,26 @@ export class UsersService {
     async updateUser(id: number, fieldsToUpdate: Partial<UpdateUserRequest>) {
         const { email, name, password } = fieldsToUpdate
         const hashedPassword = password ? await this.hashPassword(password) : undefined;
-        const { error } = await this.supabase.from('users').update({ email, name, password: hashedPassword }).eq('id', id);
-        const { data: user, error: selectError } = await this.supabase.from('users').select('*').eq('id', id).single();
+        const { data: user, error } = await this.supabase.from('users').update({ email, name, password: hashedPassword }).eq('id', id);
         
         if (error) {
             if (error.code === '23505') {
                 throw new DuplicateEmailError();
+            } else {
+                return error;
             }
-        }
-
-        if (selectError) {
-            return selectError;
         } else {
             return user;
         }
     }
 
     async deleteUser(id: number) {
-        const { error } = await this.supabase.from('users').delete().eq('id', id);
+        const { data: user, error } = await this.supabase.from('users').delete().eq('id', id);
 
         if (error) {
             return error;
         } else {
-            return "성공적으로 삭제되었습니다.";
+            return user;
         }
     }
 }
