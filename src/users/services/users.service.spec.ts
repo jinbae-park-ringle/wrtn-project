@@ -25,9 +25,6 @@ describe('UsersService', () => {
         select: jest.fn().mockResolvedValue({ data: mockUsers }),
       };
 
-      jest.mock('@supabase/supabase-js', () => ({
-        createClient: jest.fn(() => mockSupabase),
-      }));
       service['supabase'] = mockSupabase;
 
       const result = await service.getUsers();
@@ -47,9 +44,6 @@ describe('UsersService', () => {
           .mockResolvedValue({ data: mockUsers[specific_id - 1] }),
       };
 
-      jest.mock('@supabase/supabase-js', () => ({
-        createClient: jest.fn(() => mockSupabase),
-      }));
       service['supabase'] = mockSupabase;
 
       const result = await service.getUser(specific_id - 1);
@@ -74,9 +68,6 @@ describe('UsersService', () => {
         single: jest.fn().mockResolvedValue({ data: newUser }),
       };
 
-      jest.mock('@supabase/supabase-js', () => ({
-        createClient: jest.fn(() => mockSupabase),
-      }));
       service['supabase'] = mockSupabase;
 
       const result = await service.createUser(userDto);
@@ -100,9 +91,6 @@ describe('UsersService', () => {
         single: jest.fn().mockResolvedValue({ data: updatedUserInFuture }),
       };
 
-      jest.mock('@supabase/supabase-js', () => ({
-        createClient: jest.fn(() => mockSupabase),
-      }));
       service['supabase'] = mockSupabase;
 
       const fieldsToUpdate = { name: 'updated_name' };
@@ -125,9 +113,6 @@ describe('UsersService', () => {
           .mockResolvedValue({ data: mockUsers[specific_id - 1] }),
       };
 
-      jest.mock('@supabase/supabase-js', () => ({
-        createClient: jest.fn(() => mockSupabase),
-      }));
       service['supabase'] = mockSupabase;
 
       const result = await service.deleteUser(specific_id);
