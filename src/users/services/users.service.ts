@@ -1,13 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcrypt';
-import {
-  DuplicateEmailError,
-  NoResultError,
-  InvalidEmailError,
-  UpdateUserRequest,
-} from '../users.module';
 import { UserRequestDto } from '../dto/user.request.dto';
+import { UpdateUserRequest } from '../users.module';
 
 function getSupabaseClient() {
   const supabaseUrl = 'https://xxibjawyzuvhzzmblcim.supabase.co';
@@ -30,13 +25,7 @@ export class UsersService {
       .select('id, name, email, created_at');
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        throw new NoResultError();
-      } else {
-        return error;
-      }
-    } else {
-      return users;
+      throw new HttpException(error.code, 500);
     }
   }
 
@@ -48,14 +37,10 @@ export class UsersService {
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        throw new NoResultError();
-      } else {
-        return error;
-      }
-    } else {
-      return user;
+      throw new HttpException(error.code, 500);
     }
+
+    return user;
   }
 
   async hashPassword(password: string) {
@@ -74,16 +59,10 @@ export class UsersService {
       .single();
 
     if (error) {
-      if (error.code === '23505') {
-        throw new DuplicateEmailError();
-      } else if (error.code === '23514') {
-        throw new InvalidEmailError();
-      } else {
-        return error;
-      }
-    } else {
-      return user;
+      throw new HttpException(error.code, 500);
     }
+
+    return user;
   }
 
   async updateUser(id: number, fieldsToUpdate: Partial<UpdateUserRequest>) {
@@ -99,18 +78,10 @@ export class UsersService {
       .single();
 
     if (error) {
-      if (error.code === '23505') {
-        throw new DuplicateEmailError();
-      } else if (error.code === 'PGRST116') {
-        throw new NoResultError();
-      } else if (error.code === '23514') {
-        throw new InvalidEmailError();
-      } else {
-        return error;
-      }
-    } else {
-      return user;
+      throw new HttpException(error.code, 500);
     }
+
+    return user;
   }
 
   async updatePartialUser() {
@@ -126,13 +97,9 @@ export class UsersService {
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        throw new NoResultError();
-      } else {
-        return error;
-      }
-    } else {
-      return user;
+      throw new HttpException(error.code, 500);
     }
+
+    return user;
   }
 }
