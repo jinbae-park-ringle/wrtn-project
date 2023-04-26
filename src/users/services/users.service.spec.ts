@@ -62,6 +62,11 @@ describe('UsersService', () => {
   describe('createUser', () => {
     it('should create the one mock user', async () => {
       const newUser = { id: 4, name: 'Jane', email: 'jane@example.com' };
+      const userDto = {
+        email: 'jane@example.com',
+        name: 'Jane',
+        password: '1234567',
+      };
       const mockSupabase = {
         from: jest.fn().mockReturnThis(),
         insert: jest.fn().mockReturnThis(),
@@ -74,17 +79,13 @@ describe('UsersService', () => {
       }));
       service['supabase'] = mockSupabase;
 
-      const result = await service.createUser(
-        'jane@example.com',
-        'Jane',
-        '1234567',
-      );
+      const result = await service.createUser(userDto);
 
       expect(result).toEqual(newUser);
     });
   });
 
-  describe('updateUser', () => {
+  describe('PartialUpdateUser', () => {
     it('should update the one mock user', async () => {
       const updatedUserInFuture = {
         id: 3,
@@ -105,7 +106,7 @@ describe('UsersService', () => {
       service['supabase'] = mockSupabase;
 
       const fieldsToUpdate = { name: 'updated_name' };
-      const result = await service.updateUser(3, fieldsToUpdate);
+      const result = await service.updatePartialUser(3, fieldsToUpdate);
 
       expect(result['name']).toEqual(updatedUserInFuture['name']);
     });
