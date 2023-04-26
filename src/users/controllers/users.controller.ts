@@ -44,7 +44,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '유저 정보 부분 update' })
-  @ApiBody({ type: UserRequestDto })
+  @ApiBody({ type: UserUpdateDto })
   @Patch(':id')
   async updatePartialUser(
     @Param('id') id: number,
