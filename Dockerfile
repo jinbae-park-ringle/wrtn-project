@@ -1,11 +1,8 @@
 FROM node:14-alpine AS builder
-
 WORKDIR /app
-COPY package.json .
+COPY . .
 RUN npm install --production
-COPY tsconfig.json .
 RUN npm run build
-COPY ./dist ./dist
 
 FROM node:14-alpine
 WORKDIR /app
