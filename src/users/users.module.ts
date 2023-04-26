@@ -17,18 +17,18 @@ export class DuplicateEmailError extends HttpException {
 
 export class NoResultError extends HttpException {
   constructor() {
-    super('No result error', HttpStatus.NOT_FOUND)
+    super('No result error', HttpStatus.NOT_FOUND);
   }
 }
 
 export class InvalidEmailError extends HttpException {
   constructor() {
-    super('Invalid email error', HttpStatus.UNPROCESSABLE_ENTITY)
+    super('Invalid email error', HttpStatus.UNPROCESSABLE_ENTITY);
   }
 }
 
 @Module({
   providers: [UsersService],
-  controllers: [UsersController]
+  controllers: [UsersController],
 })
 export class UsersModule {}
