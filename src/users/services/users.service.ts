@@ -6,7 +6,8 @@ import {
   NoResultError,
   InvalidEmailError,
   UpdateUserRequest,
-} from './users.module';
+} from '../users.module';
+import { UserRequestDto } from '../dto/user.request.dto';
 
 function getSupabaseClient() {
   const supabaseUrl = 'https://xxibjawyzuvhzzmblcim.supabase.co';
@@ -26,7 +27,7 @@ export class UsersService {
   async getUsers() {
     const { data: users, error } = await this.supabase
       .from('users')
-      .select('*');
+      .select('id, name, email, created_at');
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -42,7 +43,7 @@ export class UsersService {
   async getUser(id: number) {
     const { data: user, error } = await this.supabase
       .from('users')
-      .select('*')
+      .select('id, name, email, created_at')
       .eq('id', id)
       .single();
 
@@ -63,7 +64,8 @@ export class UsersService {
     return hashedPassword;
   }
 
-  async createUser(email: string, name: string, password: string) {
+  async createUser(body: UserRequestDto) {
+    const { email, name, password } = body;
     const hashedPassword = await this.hashPassword(password);
     const { data: user, error } = await this.supabase
       .from('users')
@@ -109,6 +111,10 @@ export class UsersService {
     } else {
       return user;
     }
+  }
+
+  async updatePartialUser() {
+    return 'update partial user';
   }
 
   async deleteUser(id: number) {

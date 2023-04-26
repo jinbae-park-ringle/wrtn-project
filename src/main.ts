@@ -1,9 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as basicAuth from 'express-basic-auth';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(
+    basicAuth({
+      users: { admin: 'password' },
+      challenge: true,
+    }),
+  );
 
   const options = new DocumentBuilder()
     .setTitle('Wrtn 프로젝트 API Docs')
