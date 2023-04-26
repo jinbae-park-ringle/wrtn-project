@@ -11,7 +11,6 @@ import {
 import { UsersService } from '../services/users.service';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UpdateUserRequest } from '../users.module';
-import { UserResponseDto } from '../dto/user.response.dto';
 import { UserRequestDto } from '../dto/user.request.dto';
 
 @Controller('users')
@@ -19,22 +18,12 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: '전체 유저 가져오기' })
-  @ApiResponse({
-    status: 200,
-    description: '성공',
-    type: UserResponseDto,
-  })
   @Get()
   async getUsers() {
     return this.usersService.getUsers();
   }
 
   @ApiOperation({ summary: '특정 유저 가져오기' })
-  @ApiResponse({
-    status: 200,
-    description: '성공',
-    type: UserResponseDto,
-  })
   @Get(':id')
   async getUser(@Param('id') id: number) {
     return this.usersService.getUser(id);
@@ -42,11 +31,6 @@ export class UsersController {
 
   @ApiOperation({ summary: '유저 생성' })
   @ApiBody({ type: UserRequestDto })
-  @ApiResponse({
-    status: 200,
-    description: '성공',
-    type: UserResponseDto,
-  })
   @Post()
   async createUser(@Body() body: UserRequestDto) {
     return this.usersService.createUser(body);
