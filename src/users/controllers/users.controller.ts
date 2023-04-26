@@ -9,9 +9,9 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { UpdateUserRequest } from '../users.module';
+import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { UserRequestDto } from '../dto/user.request.dto';
+import { UserUpdateDto } from '../dto/user.update.dto';
 
 @Controller('users')
 export class UsersController {
@@ -37,23 +37,20 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '유저 정보 전체 update' })
-  @Put(':id')
   @ApiBody({ type: UserRequestDto })
-  async updateUser(@Param('id') id: number, @Body() body: UpdateUserRequest) {
-    const { email, name, password } = body;
-    const fieldsToUpdate: Partial<UpdateUserRequest> = {};
-
-    if (email) fieldsToUpdate.email = email;
-    if (name) fieldsToUpdate.name = name;
-    if (password) fieldsToUpdate.password = password;
-
-    return this.usersService.updateUser(id, fieldsToUpdate);
+  @Put(':id')
+  async updateUser(@Param('id') id: number, @Body() body: UserRequestDto) {
+    return this.usersService.updateUser(id, body);
   }
 
   @ApiOperation({ summary: '유저 정보 부분 update' })
+  @ApiBody({ type: UserRequestDto })
   @Patch(':id')
-  async updatePartialUser() {
-    return this.usersService.updatePartialUser;
+  async updatePartialUser(
+    @Param('id') id: number,
+    @Body() body: UserUpdateDto,
+  ) {
+    return this.usersService.updatePartialUser(id, body);
   }
 
   @ApiOperation({ summary: '유저 삭제' })

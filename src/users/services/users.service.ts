@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcrypt';
 import { UserRequestDto } from '../dto/user.request.dto';
-import { UpdateUserRequest } from '../users.module';
+import { UserUpdateDto } from '../dto/user.update.dto';
 
 function getSupabaseClient() {
   const supabaseUrl = 'https://xxibjawyzuvhzzmblcim.supabase.co';
@@ -55,7 +55,7 @@ export class UsersService {
     const { data: user, error } = await this.supabase
       .from('users')
       .insert([{ email, name, password: hashedPassword }])
-      .select()
+      .select('id, name, email, created_at')
       .single();
 
     if (error) {
@@ -65,16 +65,14 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(id: number, fieldsToUpdate: Partial<UpdateUserRequest>) {
-    const { email, name, password } = fieldsToUpdate;
-    const hashedPassword = password
-      ? await this.hashPassword(password)
-      : undefined;
+  async updateUser(id: number, body: UserRequestDto) {
+    const { email, name, password } = body;
+    const hashedPassword = await this.hashPassword(password);
     const { data: user, error } = await this.supabase
       .from('users')
       .update({ email, name, password: hashedPassword })
       .eq('id', id)
-      .select()
+      .select('id, name, email, created_at')
       .single();
 
     if (error) {
@@ -84,8 +82,24 @@ export class UsersService {
     return user;
   }
 
-  async updatePartialUser() {
-    return 'update partial user';
+  async updatePartialUser(id: number, body: UserUpdateDto) {
+    const { email, name, password } = body;
+    const hashedPassword = password
+      ? await this.hashPassword(password)
+      : undefined;
+
+    const { data: user, error } = await this.supabase
+      .from('users')
+      .update({ email, name, password: hashedPassword })
+      .eq('id', id)
+      .select('id, name, email, created_at')
+      .single();
+
+    if (error) {
+      throw new HttpException(error.code, 500);
+    }
+
+    return user;
   }
 
   async deleteUser(id: number) {
@@ -93,7 +107,7 @@ export class UsersService {
       .from('users')
       .delete()
       .eq('id', id)
-      .select()
+      .select('id, name, email, created_at')
       .single();
 
     if (error) {
