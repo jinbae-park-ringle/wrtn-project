@@ -27,6 +27,8 @@ export class UsersService {
     if (error) {
       throw new HttpException(error.code, 500);
     }
+
+    return users;
   }
 
   async getUser(id: number) {
